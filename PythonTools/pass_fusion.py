@@ -5,13 +5,13 @@ import argparse
 def user_input():
     parser = argparse.ArgumentParser(description="Generate a wordlist.")
     parser.add_argument("-f", "--filename", dest="filename", help="Specify the filename")
-    parser.add_argument("-w", "--wordcount", dest="wordcount", type=int,  help="Specify the number of words")
+    parser.add_argument("-w", "--wordcount", dest="wordcount", type=int, help="Specify the number of words")
     args = parser.parse_args()
 
     print(r"""
- ____               _____          _             
-|  _ \ __ _ ___ ___|  ___|   _ ___(_) ___  _ __  
-| |_) / _` / __/ __| |_ | | | / __| |/ _ \| '_ \ 
+ ____               _____          _
+|  _ \ __ _ ___ ___|  ___|   _ ___(_) ___  _ __
+| |_) / _` / __/ __| |_ | | | / __| |/ _ \| '_ \
 |  __/ (_| \__ \__ \  _|| |_| \__ \ | (_) | | | |
 |_|   \__,_|___/___/_|   \__,_|___/_|\___/|_| |_|
                                                  
@@ -25,10 +25,19 @@ Example Usage: python pass_fusion.py -f [wordlist.txt] -w [word count]
     birth = input("Birth: ")
     pet = input("Pet: ")
 
+    word_list = []
+    if name:
+        word_list.append(name)
+    if surname:
+        word_list.append(surname)
+    if birth:
+        word_list.append(birth)
+    if pet:
+        word_list.append(pet)
+
     additional_info = input("Would you like to provide additional information? (yes/no): ")
     if additional_info.lower() == 'yes':
         print("Enter additional words one by one. Enter '-1' to finish.")
-        word_list = [name, surname, birth, pet]
         while True:
             useful_info = input("Add a word: ")
             if useful_info == "-1":
@@ -37,8 +46,6 @@ Example Usage: python pass_fusion.py -f [wordlist.txt] -w [word count]
                 print("Please input one word at a time.")
             else:
                 word_list.append(useful_info)
-    else:
-        word_list = [name, surname, birth, pet]
 
     if not args.filename:
         args.filename = input("Enter the filename: ")
@@ -53,38 +60,42 @@ Example Usage: python pass_fusion.py -f [wordlist.txt] -w [word count]
 
     word_generator(word_list, args.filename, args.wordcount)
 
+
 def word_generator(word_list, file_name, word_count):
     with open(file_name, "w") as file:
-        generated_words = set()  
-        priv_char = ["!","@","&","'","#","+","$","*","-","/"]
+        generated_words = set()
+        priv_char = ["!", "@", "&", "'", "#", "+", "$", "*", "-", "/"]
         for _ in range(word_count):
             word1 = random.choice(word_list)
             word2 = random.choice(word_list)
-            
-            new_word = word1 + word2 
+            compound_word = word1 + word2
+        
+            passlist = [word1,word2,compound_word]
+            testword = random.choice(passlist)
 
             if random.choice([True, False]):
-                new_word = str(random.randint(0, 9)) + new_word
+                new_word = str(random.randint(0, 9)) + testword
             else:
-                new_word += str(random.randint(0, 9))
+                testword += str(random.randint(0, 9))
             if random.choice([True, False]):
                 if random.choice([True, False]):
-                    new_word = str(random.choice(priv_char)) + new_word
+                    new_word = str(random.choice(priv_char)) + testword
                 else:
                     if random.choice([True, False]):
-                        index = random.randint(0, len(new_word))
-                        new_word = new_word[:index] + random.choice(priv_char) + new_word[index:]
+                        index = random.randint(0, len(testword))
+                        new_word = testword[:index] + random.choice(priv_char) + testword[index:]
             if random.choice([True, False]):
                 if random.choice([True, False]):
-                    new_word = new_word[::-1]
+                    new_word = testword[::-1]
             if random.choice([True, False]):
                 if random.choice([True, False]):
-                    new_word = new_word.lower()
+                    new_word = testword.lower()
                 else:
-                    new_word = new_word.upper()
+                    new_word = testword.upper()
             if new_word not in generated_words:
                 file.write(new_word + "\n")
                 generated_words.add(new_word)
+
 
 if __name__ == "__main__":
     user_input()
