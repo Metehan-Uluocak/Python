@@ -58,19 +58,20 @@ Example Usage: python pass_fusion.py -f [wordlist.txt] -w [word count]
     if not args.wordcount:
         args.wordcount = 100
 
-    word_generator(word_list, args.filename, args.wordcount)
+    word_generator(word_list, args.wordcount, args.filename)
 
 
-def word_generator(word_list, file_name, word_count):
-    with open(file_name, "w") as file:
-        generated_words = set()
-        priv_char = ["!", "@", "&", "'", "#", "+", "$", "*", "-", "/"]
-        for _ in range(word_count):
+def word_generator(word_list, word_count, filename):
+    priv_char = ["!", "@", "&", "'", "#", "+", "$", "*", "-", "/"]
+    generated_words = set()  
+    loop_count = word_count
+    with open(filename, "a", encoding="utf-8") as file:
+        while loop_count > 0:
             word1 = random.choice(word_list)
             word2 = random.choice(word_list)
             compound_word = word1 + word2
-        
-            passlist = [word1,word2,compound_word]
+            
+            passlist = [word1, word2, compound_word]
             testword = random.choice(passlist)
 
             if random.choice([True, False]):
@@ -79,11 +80,10 @@ def word_generator(word_list, file_name, word_count):
                 testword += str(random.randint(0, 9))
             if random.choice([True, False]):
                 if random.choice([True, False]):
-                    new_word = str(random.choice(priv_char)) + testword
+                    index = random.randint(0, len(testword))
+                    new_word = testword[:index] + random.choice(priv_char) + testword[index:]
                 else:
-                    if random.choice([True, False]):
-                        index = random.randint(0, len(testword))
-                        new_word = testword[:index] + random.choice(priv_char) + testword[index:]
+                    new_word = str(random.choice(priv_char)) + testword
             if random.choice([True, False]):
                 if random.choice([True, False]):
                     new_word = testword[::-1]
@@ -92,10 +92,11 @@ def word_generator(word_list, file_name, word_count):
                     new_word = testword.lower()
                 else:
                     new_word = testword.upper()
+                    
             if new_word not in generated_words:
-                file.write(new_word + "\n")
                 generated_words.add(new_word)
-
+                file.write(new_word + "\n")
+                loop_count -= 1
 
 if __name__ == "__main__":
     user_input()
